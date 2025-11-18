@@ -58,5 +58,5 @@ export interface ProductsResponse {
 
 export type Category = 'smartphones' | 'laptops' | 'tablets' | 'accessories' | 'audio' | 'gaming';
 
-// Добавляем runtime значение чтобы файл не был пустым
+// Add runtime value so file is not empty
 export const CATEGORIES: Category[] = ['smartphones', 'laptops', 'tablets', 'accessories', 'audio', 'gaming'];

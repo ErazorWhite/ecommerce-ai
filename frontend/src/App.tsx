@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ApiModeProvider } from './contexts/ApiModeContext';
 import { Header } from './components/Header/Header';
+import { ApiModeSwitcher } from './components/ApiModeSwitcher/ApiModeSwitcher';
 import { RecommendationSection } from './components/RecommendationSection/RecommendationSection';
 import { ProductList } from './components/ProductList/ProductList';
 import { useProducts } from './hooks/useProducts';
@@ -48,6 +50,8 @@ function AppContent() {
 
       <main className="main-content">
         <div className="container">
+          <ApiModeSwitcher />
+
           {selectedUserId && (
             <RecommendationSection userId={selectedUserId} />
           )}
@@ -91,7 +95,9 @@ function AppContent() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppContent />
+      <ApiModeProvider>
+        <AppContent />
+      </ApiModeProvider>
     </QueryClientProvider>
   );
 }
