@@ -123,8 +123,8 @@ export class RecommendationService {
         throw new Error('Product not found');
       }
 
-      // Находим похожие по категории и ценовому диапазону
-      const priceRange = product.price * 0.3; // ±30% от цены
+      // Find similar items by category and price range
+      const priceRange = product.price * 0.3; // ±30% of the price
       
       const similar = await Product.find({
         _id: { $ne: productId },
