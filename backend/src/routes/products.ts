@@ -10,8 +10,8 @@ const productQuerySchema = z.object({
   minPrice: z.string().transform(Number).optional(),
   maxPrice: z.string().transform(Number).optional(),
   brand: z.string().optional(),
-  limit: z.string().transform(Number).default('20'),
-  page: z.string().transform(Number).default('1'),
+  limit: z.string().transform(Number).default(() => 20),
+  page: z.string().transform(Number).default(() => 1),
 });
 
 // GET /api/products - Get all products with filters

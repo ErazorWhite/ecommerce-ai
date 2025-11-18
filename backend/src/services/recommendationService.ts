@@ -14,7 +14,7 @@ export interface RecommendationResult {
 
 export class RecommendationService {
   /**
-   * Получить персонализированные рекомендации для пользователя
+   * Get personalized recommendations for user
    */
   async getPersonalizedRecommendations(
     userId: string,
@@ -24,7 +24,7 @@ export class RecommendationService {
     const startTime = Date.now();
 
     try {
-      // 1. Получаем историю взаимодействий пользователя
+      // 1. Get user interaction history
       const userInteractions = await Interaction.find({
         userId: new mongoose.Types.ObjectId(userId),
         type: { $in: [InteractionType.VIEW, InteractionType.PURCHASE, InteractionType.CLICK] },
@@ -33,10 +33,10 @@ export class RecommendationService {
         .limit(20)
         .populate('productId');
 
-      // 2. Получаем предпочтения пользователя
+      // 2. Get user preferences
       const user = await User.findById(userId);
 
-      // 3. Извлекаем категории и бренды из истории
+      // 3. Extract categories and brands from history
       const viewedProducts = userInteractions
         .filter(i => i.productId)
         .map(i => i.productId as any as IProduct);
@@ -44,45 +44,45 @@ export class RecommendationService {
       const preferredCategories = [...new Set(viewedProducts.map(p => p.category))];
       const preferredBrands = [...new Set(viewedProducts.map(p => p.brand))];
 
-      // 4. Формируем запрос для рекомендаций
+      // 4. Build recommendation query
       const query: any = {
         _id: { $nin: [...excludeProductIds, ...viewedProducts.map(p => p._id.toString())] },
       };
 
-      // Фильтр по предпочтениям пользователя
+      // Filter by user preferences
       if (user?.preferences?.categories && user.preferences.categories.length > 0) {
         query.category = { $in: user.preferences.categories };
       } else if (preferredCategories.length > 0) {
         query.category = { $in: preferredCategories };
       }
 
-      // 5. Получаем кандидатов
+      // 5. Get candidates
       const candidates = await Product.find(query).limit(limit * 3);
 
-      // 6. Скоринг кандидатов
+      // 6. Score candidates
       const scored = candidates.map(product => {
         let score = 0;
         let reason = '';
 
-        // Бонус за соответствие категории
+        // Bonus for category match
         if (preferredCategories.includes(product.category)) {
           score += 0.3;
           reason = `Matches your interest in ${product.category}`;
         }
 
-        // Бонус за бренд
+        // Bonus for brand
         if (preferredBrands.includes(product.brand)) {
           score += 0.2;
           reason += reason ? ` and ${product.brand} products` : `You've viewed ${product.brand} before`;
         }
 
-        // Бонус за рейтинг
+        // Bonus for rating
         score += (product.rating / 5) * 0.3;
 
-        // Бонус за популярность
+        // Bonus for popularity
         score += Math.min(product.reviewCount / 1000, 1) * 0.2;
 
-        // Случайный фактор для разнообразия
+        // Random factor for diversity
         score += Math.random() * 0.1;
 
         return {
@@ -95,7 +95,7 @@ export class RecommendationService {
         };
       });
 
-      // 7. Сортируем и возвращаем топ
+      // 7. Sort and return top results
       const recommendations = scored
         .sort((a, b) => b.score - a.score)
         .slice(0, limit);
@@ -111,7 +111,7 @@ export class RecommendationService {
   }
 
   /**
-   * Получить похожие товары на основе характеристик
+   * Get similar products based on features
    */
   async getSimilarProducts(
     productId: string,
@@ -150,7 +150,7 @@ export class RecommendationService {
   }
 
   /**
-   * Получить популярные товары в категории
+   * Get trending products in category
    */
   async getTrendingProducts(
     category?: string,
@@ -178,7 +178,7 @@ export class RecommendationService {
   }
 
   /**
-   * Fallback рекомендации (популярные товары)
+   * Fallback recommendations (popular products)
    */
   private async getFallbackRecommendations(
     limit: number,

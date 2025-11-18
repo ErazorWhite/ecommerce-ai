@@ -19,7 +19,7 @@ const client = new recommendationsProto.RecommendationService(
   grpc.credentials.createInsecure()
 );
 
-// Тест: Получение рекомендаций
+// Test: Get recommendations
 function testGetRecommendations(userId: string) {
   return new Promise((resolve, reject) => {
     client.GetRecommendations(
@@ -35,7 +35,7 @@ function testGetRecommendations(userId: string) {
   });
 }
 
-// Тест: Похожие товары
+// Test: Similar products
 function testGetSimilarProducts(productId: string) {
   return new Promise((resolve, reject) => {
     client.GetSimilarProducts(
@@ -51,7 +51,7 @@ function testGetSimilarProducts(productId: string) {
   });
 }
 
-// Тест: Популярные товары
+// Test: Trending products
 function testGetTrendingProducts(category?: string) {
   return new Promise((resolve, reject) => {
     client.GetTrendingProducts(
@@ -67,12 +67,12 @@ function testGetTrendingProducts(category?: string) {
   });
 }
 
-// Запуск тестов
+// Run tests
 async function runTests() {
   console.log('🧪 Running gRPC Client Tests...\n');
 
   try {
-    // Получаем первого пользователя из базы
+    // Get first user from database
     const mongoose = await import('mongoose');
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce-ai');
     
@@ -89,19 +89,19 @@ async function runTests() {
     console.log(`📝 Test User ID: ${user._id}`);
     console.log(`📝 Test Product ID: ${product._id}\n`);
 
-    // Тест 1: Персонализированные рекомендации
+    // Test 1: Personalized recommendations
     console.log('1️⃣  Testing GetRecommendations...');
     const recommendations = await testGetRecommendations(user._id.toString());
     console.log('✅ Result:', JSON.stringify(recommendations, null, 2));
     console.log('');
 
-    // Тест 2: Похожие товары
+    // Test 2: Similar products
     console.log('2️⃣  Testing GetSimilarProducts...');
     const similar = await testGetSimilarProducts(product._id.toString());
     console.log('✅ Result:', JSON.stringify(similar, null, 2));
     console.log('');
 
-    // Тест 3: Популярные товары
+    // Test 3: Trending products
     console.log('3️⃣  Testing GetTrendingProducts...');
     const trending = await testGetTrendingProducts('smartphones');
     console.log('✅ Result:', JSON.stringify(trending, null, 2));
@@ -115,7 +115,7 @@ async function runTests() {
   }
 }
 
-// Запускаем если вызван напрямую
+// Run if called directly
 if (require.main === module) {
   runTests();
 }

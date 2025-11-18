@@ -1,8 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { connectNodeAdapter } from '@connectrpc/connect-node';
 import { connectDatabase } from './config/database';
 import { startGrpcServer } from './services/grpcServer';
+import connectRoutes from './services/connectServer';
 import productsRouter from './routes/products';
 import usersRouter from './routes/users';
 import interactionsRouter from './routes/interactions';
@@ -16,7 +18,6 @@ const GRPC_PORT = Number(process.env.GRPC_PORT) || 50051;
 
 // Middleware
 app.use(cors());
-app.use(express.json());
 
 // Request logging
 app.use((req, res, next) => {
@@ -24,7 +25,18 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes
+// Connect-Web (gRPC-Web alternative) routes - MUST be before express.json()
+app.use(
+  '/connect',
+  connectNodeAdapter({
+    routes: connectRoutes,
+  })
+);
+
+// JSON parsing for REST routes only
+app.use(express.json());
+
+// REST Routes
 app.use('/api/products', productsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/interactions', interactionsRouter);
@@ -32,12 +44,13 @@ app.use('/api/recommendations', recommendationsRouter);
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     message: 'Backend is running!',
     services: {
       rest: 'running',
       grpc: 'running',
+      connect: 'running',
       database: 'connected',
     },
     timestamp: new Date().toISOString()
@@ -63,7 +76,7 @@ app.use((req, res) => {
 const startServers = async () => {
   try {
     await connectDatabase();
-    
+
     // Start REST API
     app.listen(PORT, () => {
       console.log(`\n🚀 REST API running on http://localhost:${PORT}`);
@@ -75,12 +88,16 @@ const startServers = async () => {
       console.log('   GET  /api/recommendations/:userId');
       console.log('   GET  /api/recommendations/similar/:productId');
       console.log('   GET  /api/recommendations/trending/products');
+      console.log('\n🔌 Connect-Web Endpoints:');
+      console.log('   POST /connect/recommendations.RecommendationService/GetRecommendations');
+      console.log('   POST /connect/recommendations.RecommendationService/GetSimilarProducts');
+      console.log('   POST /connect/recommendations.RecommendationService/GetTrendingProducts');
     });
 
     // Start gRPC server
     startGrpcServer(GRPC_PORT);
     console.log(`\n⚡ gRPC Recommendations on port ${GRPC_PORT}\n`);
-    
+
   } catch (error) {
     console.error('Failed to start servers:', error);
     process.exit(1);

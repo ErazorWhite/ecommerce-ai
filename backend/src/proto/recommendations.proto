@@ -3,13 +3,13 @@ syntax = "proto3";
 package recommendations;
 
 service RecommendationService {
-  // Получить персонализированные рекомендации
+  // Get personalized recommendations
   rpc GetRecommendations (RecommendationRequest) returns (RecommendationResponse);
-  
-  // Получить похожие товары
+
+  // Get similar products
   rpc GetSimilarProducts (SimilarProductsRequest) returns (SimilarProductsResponse);
-  
-  // Получить популярные товары в категории
+
+  // Get trending products in category
   rpc GetTrendingProducts (TrendingRequest) returns (TrendingResponse);
 }
 

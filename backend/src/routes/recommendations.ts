@@ -5,11 +5,11 @@ import { z } from 'zod';
 const router = Router();
 
 const recommendationQuerySchema = z.object({
-  limit: z.string().transform(Number).default('5'),
+  limit: z.string().transform(Number).default(() => 5),
   exclude: z.string().optional(),
 });
 
-// GET /api/recommendations/:userId - Персонализированные рекомендации
+// GET /api/recommendations/:userId - Personalized recommendations
 router.get('/:userId', async (req: Request, res: Response) => {
   const startTime = Date.now();
   
@@ -38,7 +38,7 @@ router.get('/:userId', async (req: Request, res: Response) => {
   }
 });
 
-// GET /api/recommendations/similar/:productId - Похожие товары
+// GET /api/recommendations/similar/:productId - Similar products
 router.get('/similar/:productId', async (req: Request, res: Response) => {
   const startTime = Date.now();
   
@@ -63,7 +63,7 @@ router.get('/similar/:productId', async (req: Request, res: Response) => {
   }
 });
 
-// GET /api/recommendations/trending - Популярные товары
+// GET /api/recommendations/trending - Trending products
 router.get('/trending/products', async (req: Request, res: Response) => {
   const startTime = Date.now();
   

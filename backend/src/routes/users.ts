@@ -52,7 +52,7 @@ router.post('/', async (req: Request, res: Response) => {
     res.status(201).json(user);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid data', details: error.errors });
+      return res.status(400).json({ error: 'Invalid data', details: error.issues });
     }
     console.error('Error creating user:', error);
     res.status(500).json({ error: 'Failed to create user' });

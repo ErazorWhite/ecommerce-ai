@@ -74,7 +74,7 @@ const ProductSchema = new Schema<IProduct>(
   }
 );
 
-// Индексы для быстрого поиска
+// Indexes for fast search
 ProductSchema.index({ category: 1, price: 1 });
 ProductSchema.index({ brand: 1 });
 ProductSchema.index({ tags: 1 });

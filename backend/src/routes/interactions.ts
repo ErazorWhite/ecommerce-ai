@@ -8,7 +8,7 @@ const createInteractionSchema = z.object({
   userId: z.string(),
   productId: z.string().optional(),
   type: z.enum(['view', 'click', 'add_to_cart', 'purchase', 'search']),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
   sessionId: z.string(),
 });
 
@@ -24,7 +24,7 @@ router.post('/', async (req: Request, res: Response) => {
     res.status(201).json(interaction);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid data', details: error.errors });
+      return res.status(400).json({ error: 'Invalid data', details: error.issues });
     }
     console.error('Error creating interaction:', error);
     res.status(500).json({ error: 'Failed to track interaction' });
@@ -57,7 +57,7 @@ router.get('/product/:productId', async (req: Request, res: Response) => {
       productId: req.params.productId 
     }).sort({ timestamp: -1 });
 
-    // Агрегация по типам
+    // Aggregation by types
     const stats = await Interaction.aggregate([
       { $match: { productId: req.params.productId } },
       { $group: { _id: '$type', count: { $sum: 1 } } },

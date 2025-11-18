@@ -54,7 +54,7 @@ const InteractionSchema = new Schema<IInteraction>(
   }
 );
 
-// Compound index для аналитики
+// Compound index for analytics
 InteractionSchema.index({ userId: 1, timestamp: -1 });
 InteractionSchema.index({ productId: 1, type: 1 });
 

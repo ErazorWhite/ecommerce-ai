@@ -253,30 +253,30 @@ async function seedDatabase() {
 
     await connectDatabase();
 
-    // Очищаем существующие данные
+    // Clear existing data
     console.log('🗑️  Clearing existing data...');
     await User.deleteMany({});
     await Product.deleteMany({});
     await Interaction.deleteMany({});
 
-    // Создаем пользователей
+    // Create users
     console.log('👥 Creating users...');
     const createdUsers = await User.insertMany(users);
     console.log(`✅ Created ${createdUsers.length} users`);
 
-    // Создаем продукты
+    // Create products
     console.log('📦 Creating products...');
     const createdProducts = await Product.insertMany(products);
     console.log(`✅ Created ${createdProducts.length} products`);
 
-    // Создаем тестовые взаимодействия
+    // Create test interactions
     console.log('🔄 Creating interactions...');
     const interactions = [];
     
     for (const user of createdUsers) {
       const sessionId = `session_${user._id}_${Date.now()}`;
       
-      // Каждый пользователь просматривает 3-5 товаров
+      // Each user views 3-5 products
       const viewCount = Math.floor(Math.random() * 3) + 3;
       const shuffledProducts = [...createdProducts].sort(() => Math.random() - 0.5);
       
@@ -289,7 +289,7 @@ async function seedDatabase() {
           timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000),
         });
 
-        // 50% шанс клика после просмотра
+        // 50% chance of click after view
         if (Math.random() > 0.5) {
           interactions.push({
             userId: user._id,
@@ -300,7 +300,7 @@ async function seedDatabase() {
           });
         }
 
-        // 30% шанс добавления в корзину
+        // 30% chance of adding to cart
         if (Math.random() > 0.7) {
           interactions.push({
             userId: user._id,
@@ -312,7 +312,7 @@ async function seedDatabase() {
         }
       }
 
-      // Добавляем 1-2 покупки
+      // Add 1-2 purchases
       const purchaseCount = Math.floor(Math.random() * 2) + 1;
       for (let i = 0; i < purchaseCount; i++) {
         interactions.push({

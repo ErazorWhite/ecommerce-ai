@@ -16,7 +16,7 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 const recommendationsProto = grpc.loadPackageDefinition(packageDefinition).recommendations as any;
 
 /**
- * Имплементация gRPC методов
+ * Implementation of gRPC methods
  */
 const getRecommendations = async (call: any, callback: any) => {
   const startTime = Date.now();
@@ -113,7 +113,7 @@ const getTrendingProducts = async (call: any, callback: any) => {
 };
 
 /**
- * Запуск gRPC сервера
+ * Start gRPC server
  */
 export const startGrpcServer = (port: number = 50051) => {
   const server = new grpc.Server();
