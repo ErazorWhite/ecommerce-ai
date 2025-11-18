@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package recommendations;
+
+service RecommendationService {
+  // Получить персонализированные рекомендации
+  rpc GetRecommendations (RecommendationRequest) returns (RecommendationResponse);
+  
+  // Получить похожие товары
+  rpc GetSimilarProducts (SimilarProductsRequest) returns (SimilarProductsResponse);
+  
+  // Получить популярные товары в категории
+  rpc GetTrendingProducts (TrendingRequest) returns (TrendingResponse);
+}
+
+message RecommendationRequest {
+  string user_id = 1;
+  int32 limit = 2;
+  repeated string exclude_product_ids = 3;
+}
+
+message RecommendationResponse {
+  repeated ProductRecommendation recommendations = 1;
+  string algorithm = 2;
+  double latency_ms = 3;
+}
+
+message ProductRecommendation {
+  string product_id = 1;
+  string name = 2;
+  string category = 3;
+  double price = 4;
+  double score = 5;
+  string reason = 6;
+}
+
+message SimilarProductsRequest {
+  string product_id = 1;
+  int32 limit = 2;
+}
+
+message SimilarProductsResponse {
+  repeated ProductRecommendation similar_products = 1;
+  double latency_ms = 2;
+}
+
+message TrendingRequest {
+  string category = 1;
+  int32 limit = 2;
+}
+
+message TrendingResponse {
+  repeated ProductRecommendation trending_products = 1;
+  double latency_ms = 2;
+}
